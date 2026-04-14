@@ -684,6 +684,8 @@ impl Surface {
         &self,
         _suf_texture: super::Texture,
         context: &AdapterContext,
+        // WGL has no damage-aware present API; always presents the full surface.
+        _damage_rects: &[wgt::DamageRect],
     ) -> Result<(), crate::SurfaceError> {
         let swapchain = self.swapchain.read();
         let sc = swapchain.as_ref().unwrap();

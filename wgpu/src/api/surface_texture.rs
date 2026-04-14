@@ -33,6 +33,21 @@ impl SurfaceTexture {
         self.detail.present();
     }
 
+    /// Schedule this texture to be presented on the owning surface, with
+    /// damage hints.
+    ///
+    /// `damage_rects` describes the regions that changed since the last
+    /// present. On backends that support incremental presentation (e.g.,
+    /// Vulkan with `VK_KHR_incremental_present`), these are forwarded to the
+    /// compositor so it can limit repainting to the affected area.
+    ///
+    /// An empty slice is equivalent to calling [`present`](Self::present) —
+    /// the entire surface is considered damaged.
+    pub fn present_with_damage(mut self, damage_rects: &[wgt::DamageRect]) {
+        self.presented = true;
+        self.detail.present_with_damage(damage_rects);
+    }
+
     #[cfg(custom)]
     /// Returns custom implementation of SurfaceTexture (if custom backend and is internally T)
     pub fn as_custom<T: crate::custom::SurfaceOutputDetailInterface>(&self) -> Option<&T> {

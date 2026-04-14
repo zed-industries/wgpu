@@ -530,6 +530,7 @@ impl Swapchain for NativeSwapchain {
         &mut self,
         queue: &crate::vulkan::Queue,
         texture: crate::vulkan::SurfaceTexture,
+        damage_rects: &[wgt::DamageRect],
     ) -> Result<(), crate::SurfaceError> {
         let metadata = texture
             .metadata
@@ -572,6 +573,51 @@ impl Swapchain for NativeSwapchain {
             display_timing = vk::PresentTimesInfoGOOGLE::default().times(&present_times);
             // SAFETY: We know that VK_GOOGLE_display_timing is present because of the safety contract on `next_present_time`.
             vk_info.push_next(&mut display_timing)
+        } else {
+            vk_info
+        };
+
+        // When the device supports VK_KHR_incremental_present and the caller
+        // provided damage rects, attach them as VkPresentRegionsKHR so the
+        // compositor only repaints the affected area.
+        //
+        // Stack-allocate for the common single-rect case (cursor blink).
+        // Falls back to Vec for >4 rects.
+        let mut vk_rects_inline = [vk::RectLayerKHR::default(); 4];
+        let vk_rects_heap: Vec<vk::RectLayerKHR>;
+        let present_region;
+        let mut present_regions;
+        let vk_info = if self.device.private_caps.incremental_present && !damage_rects.is_empty() {
+            let vk_rects: &[vk::RectLayerKHR] = if damage_rects.len() <= 4 {
+                for (dst, src) in vk_rects_inline.iter_mut().zip(damage_rects.iter()) {
+                    *dst = vk::RectLayerKHR::default()
+                        .offset(vk::Offset2D { x: src.x, y: src.y })
+                        .extent(vk::Extent2D {
+                            width: src.width,
+                            height: src.height,
+                        })
+                        .layer(0);
+                }
+                &vk_rects_inline[..damage_rects.len()]
+            } else {
+                vk_rects_heap = damage_rects
+                    .iter()
+                    .map(|r| {
+                        vk::RectLayerKHR::default()
+                            .offset(vk::Offset2D { x: r.x, y: r.y })
+                            .extent(vk::Extent2D {
+                                width: r.width,
+                                height: r.height,
+                            })
+                            .layer(0)
+                    })
+                    .collect();
+                &vk_rects_heap
+            };
+            present_region = vk::PresentRegionKHR::default().rectangles(vk_rects);
+            let regions = core::slice::from_ref(&present_region);
+            present_regions = vk::PresentRegionsKHR::default().regions(regions);
+            vk_info.push_next(&mut present_regions)
         } else {
             vk_info
         };

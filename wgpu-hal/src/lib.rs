@@ -1245,10 +1245,17 @@ pub trait Queue: WasmNotSendSync {
         surface_textures: &[&<Self::A as Api>::SurfaceTexture],
         signal_fence: (&mut <Self::A as Api>::Fence, FenceValue),
     ) -> Result<(), DeviceError>;
+    /// Present the surface texture.
+    ///
+    /// `damage_rects` describes which regions of the surface changed since the
+    /// last present. Backends that support incremental presentation (e.g.,
+    /// `VK_KHR_incremental_present`) will forward these to the compositor.
+    /// An empty slice means the entire surface should be considered damaged.
     unsafe fn present(
         &self,
         surface: &<Self::A as Api>::Surface,
         texture: <Self::A as Api>::SurfaceTexture,
+        damage_rects: &[wgt::DamageRect],
     ) -> Result<(), SurfaceError>;
     unsafe fn get_timestamp_period(&self) -> f32;
 }

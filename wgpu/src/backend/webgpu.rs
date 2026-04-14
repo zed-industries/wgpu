@@ -3948,6 +3948,10 @@ impl dispatch::SurfaceOutputDetailInterface for WebSurfaceOutputDetail {
         // Swapchain is presented automatically on the web.
     }
 
+    fn present_with_damage(&self, _damage_rects: &[wgt::DamageRect]) {
+        // Swapchain is presented automatically on the web.
+    }
+
     fn texture_discard(&self) {
         // Can't really discard the texture on the web.
     }

@@ -579,6 +579,7 @@ pub trait SurfaceInterface: CommonTraits {
 
 pub trait SurfaceOutputDetailInterface: CommonTraits {
     fn present(&self);
+    fn present_with_damage(&self, damage_rects: &[wgt::DamageRect]);
     fn texture_discard(&self);
 }
 

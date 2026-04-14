@@ -394,6 +394,10 @@ struct PrivateCapabilities {
     /// these usages do not have as high of an alignment requirement using the buffer as
     ///  a scratch buffer when building acceleration structures.
     scratch_buffer_alignment: u32,
+
+    /// True if this adapter supports `VK_KHR_incremental_present`, allowing
+    /// present regions to be forwarded to the compositor.
+    incremental_present: bool,
 }
 
 bitflags::bitflags!(
@@ -1354,10 +1358,16 @@ impl crate::Queue for Queue {
         &self,
         surface: &Surface,
         texture: SurfaceTexture,
+        damage_rects: &[wgt::DamageRect],
     ) -> Result<(), crate::SurfaceError> {
         let mut swapchain = surface.swapchain.write();
 
-        unsafe { swapchain.as_mut().unwrap().present(self, texture) }
+        unsafe {
+            swapchain
+                .as_mut()
+                .unwrap()
+                .present(self, texture, damage_rects)
+        }
     }
 
     unsafe fn get_timestamp_period(&self) -> f32 {

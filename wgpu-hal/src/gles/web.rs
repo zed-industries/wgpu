@@ -227,6 +227,8 @@ impl Surface {
         &self,
         _suf_texture: super::Texture,
         context: &AdapterContext,
+        // WebGL has no damage-aware present API; always presents the full surface.
+        _damage_rects: &[wgt::DamageRect],
     ) -> Result<(), crate::SurfaceError> {
         let gl = &context.glow_context;
         let swapchain = self.swapchain.read();

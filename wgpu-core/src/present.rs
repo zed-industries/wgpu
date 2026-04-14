@@ -274,6 +274,13 @@ impl Surface {
     }
 
     pub fn present(&self) -> Result<Status, SurfaceError> {
+        self.present_with_damage(&[])
+    }
+
+    pub fn present_with_damage(
+        &self,
+        damage_rects: &[wgt::DamageRect],
+    ) -> Result<Status, SurfaceError> {
         profiling::scope!("Surface::present");
 
         let mut presentation = self.presentation.lock();
@@ -302,7 +309,7 @@ impl Surface {
                 let raw_surface = self.raw(device.backend()).unwrap();
                 let raw_queue = queue.raw();
                 let _fence_lock = device.fence.write();
-                unsafe { raw_queue.present(raw_surface, raw) }
+                unsafe { raw_queue.present(raw_surface, raw, damage_rects) }
             }
             _ => unreachable!(),
         };
@@ -396,6 +403,14 @@ impl Global {
     }
 
     pub fn surface_present(&self, surface_id: id::SurfaceId) -> Result<Status, SurfaceError> {
+        self.surface_present_with_damage(surface_id, &[])
+    }
+
+    pub fn surface_present_with_damage(
+        &self,
+        surface_id: id::SurfaceId,
+        damage_rects: &[wgt::DamageRect],
+    ) -> Result<Status, SurfaceError> {
         let surface = self.surfaces.get(surface_id);
 
         #[cfg(feature = "trace")]
@@ -405,7 +420,7 @@ impl Global {
             }
         }
 
-        surface.present()
+        surface.present_with_damage(damage_rects)
     }
 
     pub fn surface_texture_discard(&self, surface_id: id::SurfaceId) -> Result<(), SurfaceError> {

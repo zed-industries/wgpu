@@ -3955,6 +3955,23 @@ impl dispatch::SurfaceOutputDetailInterface for CoreSurfaceOutputDetail {
         }
     }
 
+    fn present_with_damage(&self, damage_rects: &[wgt::DamageRect]) {
+        match self
+            .context
+            .0
+            .surface_present_with_damage(self.surface_id, damage_rects)
+        {
+            Ok(_status) => (),
+            Err(err) => {
+                self.context.handle_error_nolabel(
+                    &self.error_sink,
+                    err,
+                    "Surface::present_with_damage",
+                );
+            }
+        }
+    }
+
     fn texture_discard(&self) {
         match self.context.0.surface_texture_discard(self.surface_id) {
             Ok(_status) => (),

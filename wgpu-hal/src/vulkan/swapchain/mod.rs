@@ -69,10 +69,16 @@ pub(super) trait Swapchain: Send + Sync + 'static {
     ) -> Result<(), crate::SurfaceError>;
 
     /// Presents the given surface texture using the queue.
+    ///
+    /// `damage_rects` describes the changed regions. An empty slice means the
+    /// entire surface is damaged. When the device supports
+    /// `VK_KHR_incremental_present`, non-empty damage is forwarded via
+    /// `VkPresentRegionsKHR`.
     unsafe fn present(
         &mut self,
         queue: &super::Queue,
         texture: crate::vulkan::SurfaceTexture,
+        damage_rects: &[wgt::DamageRect],
     ) -> Result<(), crate::SurfaceError>;
 
     /// Allows downcasting to the concrete type.

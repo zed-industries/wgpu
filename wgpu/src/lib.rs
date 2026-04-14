@@ -133,7 +133,7 @@ pub use wgt::{
     BlendState, BufferAddress, BufferBindingType, BufferSize, BufferTextureCopyInfo,
     BufferTransition, BufferUsages, BufferUses, Color, ColorTargetState, ColorWrites,
     CommandBufferDescriptor, CompareFunction, CompositeAlphaMode, CooperativeMatrixProperties,
-    CooperativeScalarType, CopyExternalImageDestInfo, CoreCounters, DepthBiasState,
+    CooperativeScalarType, CopyExternalImageDestInfo, CoreCounters, DamageRect, DepthBiasState,
     DepthStencilState, DeviceLostReason, DeviceType, DownlevelCapabilities, DownlevelFlags,
     DownlevelLimits, Dx12BackendOptions, Dx12Compiler, Dx12SwapchainKind,
     Dx12UseFrameLatencyWaitableObject, DxcShaderModel, DynamicOffset, ExperimentalFeatures,

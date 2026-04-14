@@ -598,6 +598,26 @@ bitflags::bitflags! {
     }
 }
 
+/// A rectangle describing a damaged (changed) region of a surface in device pixels.
+///
+/// Used with `wgpu::SurfaceTexture::present_with_damage` to inform the compositor
+/// which portion of the surface has changed, enabling partial-present
+/// optimizations (e.g., `VK_KHR_incremental_present` on Vulkan).
+///
+/// When no damage rects are provided, the entire surface is assumed to be damaged.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct DamageRect {
+    /// Horizontal offset in pixels from the top-left corner.
+    pub x: i32,
+    /// Vertical offset in pixels from the top-left corner.
+    pub y: i32,
+    /// Width of the damaged region in pixels.
+    pub width: u32,
+    /// Height of the damaged region in pixels.
+    pub height: u32,
+}
+
 /// Corresponds to a [`GPUDeviceLostReason`].
 ///
 /// [`GPUDeviceLostReason`]: https://www.w3.org/TR/webgpu/#enumdef-gpudevicelostreason
