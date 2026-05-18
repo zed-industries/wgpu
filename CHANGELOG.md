@@ -42,6 +42,59 @@ Bottom level categories:
 
 ## Unreleased
 
+## v29.0.3 (2026-05-01)
+
+### Bug Fixes
+
+- Fix compilation error when `cfg(debug_assertions)` is not active. `wgpu-core` `v29.0.2` has been yanked. By @Elabajaba in [#9352](https://github.com/gfx-rs/wgpu/pull/9352).
+
+## v29.0.2 (2026-05-01)
+
+### Bug Fixes
+
+#### General
+
+- Fix late bindings not being updated for identical pipeline layouts. By @kristoff3r in [#9341](https://github.com/gfx-rs/wgpu/pull/9341).
+- Fix missing dependency feature activations when building wgpu-hal with gles/dx12 in isolation. By @wumpf in [#9325](https://github.com/gfx-rs/wgpu/pull/9325).
+
+- Make `wgpu_types::texture::format::TextureChannel` accessible as `wgpu::TextureChannel`. By @TornaxO7 in [#9349](https://github.com/gfx-rs/wgpu/pull/9349).
+
+#### DX12
+
+- Fixed a `debug_assert` during stride validation for indirect multi draw. By @kristoff3r in [#9332](https://github.com/gfx-rs/wgpu/pull/9332).
+- Fix incorrect `max_binding_array_sampler_elements_per_shader_stage` limit reported on DX12. By @kristoff3r in [#9330](https://github.com/gfx-rs/wgpu/pull/9330).
+
+#### Vulkan
+
+- Only request `shaderDrawParameters` when `SHADER_DRAW_INDEX` is requested, avoiding device creation failures on drivers that don't support it (e.g. V3DV, SwiftShader). By @mohamedtahaguelzim in [#9331](https://github.com/gfx-rs/wgpu/pull/9331).
+
+#### Metal
+
+- Fix crash on fence creation when running in a MacOS sandbox. By @wumpf in [#9415](https://github.com/gfx-rs/wgpu/pull/9415).
+
+## v29.0.1 (2026-03-26)
+
+This release includes `wgpu-core`, `wgpu-hal` and `wgpu-types` version `29.0.1`. All other crates remain at their previous versions.
+
+### Bug Fixes
+
+#### General
+
+- Fix limit comparison logic for `max_inter_stage_shader_variables`. By @ErichDonGubler in [#9264](https://github.com/gfx-rs/wgpu/pull/9264).
+
+#### Metal
+
+- Added guards to avoid calling some feature detection methods that are not implemented on `CaptureMTLDevice`. By @andyleiserson in [#9284](https://github.com/gfx-rs/wgpu/pull/9284).
+- Fix a regression where buffer limits were too conservative. This comes at the cost of non-compliant WebGPU limit validation. A future major release will keep the relaxed buffer limits on native while allowing WebGPU-mandated validation to be opted in. See [#9287](https://github.com/gfx-rs/wgpu/issues/9287).
+
+#### GLES / OpenGL
+
+- Fix texture height initialized incorrectly in `create_texture`. By @umajho in [#9302](https://github.com/gfx-rs/wgpu/pull/9302).
+
+#### Validation
+
+- Don't crash in the `Display` implementation of `CreateTextureViewError::TooMany{MipLevels,ArrayLayers}` when their base and offset overflow. By @ErichDonGubler in [#8808](https://github.com/gfx-rs/wgpu/pull/8808).
+
 ## v29.0.0 (2026-03-18)
 
 ### Major Changes
